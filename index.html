@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do list + temp.</title>
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+    <div class="container">
+        <h2>To-Do List</h2>
+
+        <div class="add-task">
+            <input type="text" id="task-input" placeholder="Add task..." />
+            <button onclick="addTaskBth()">Add</button>
+        </div>
+        <ul id="task-list"></ul>
+
+        <div class="weather">
+            <span class="city">Stara Zagora:</span>
+            <span class="temp" id="temperatura">--°C</span>
+        </div>
+    </div>
+
+    <script scr="script.js"></script>
+    <script>
+        const addTasBth = document.getElementById("add-task-bth");
+        const taskInput = document.getElementById("task-input");
+        const taskList = document.getElementById("task-list");
+
+        function addTaskBth() {
+            console.log(event);
+            console.log(taskInput.value);
+            const taskText = taskInput.value.trim();
+            if (taskText == "") return;
+
+            const li = document.createElement("li");
+            li.textContent = taskText;
+
+            const delBth = document.createElement("button");
+            delBth.textContent = "X";
+            delBth.onclick = () => li.remove();
+
+            li.appendChild(delBth);
+            taskList.appendChild(li);
+            taskInput.value = "";
+        }
+
+       async function getTemperature() {
+        const tempApiKey = '857ec03a98c66c198bb6386f6ae5125b';
+        const lat = 42.42477170767796;
+        const lon = 25.616247733171452;
+        
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=bg&appid=${tempApiKey}`;
+
+        try{
+            const response = await fetch(url);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Weather API error: ${response.status} - ${errorData.error.message}`);
+            }
+            const data = await response.json();
+            const temperature = Math.round(data.main.temp);
+
+            document.getElementById('temperatura').textContent = `${temperature}°C`;
+        }catch (error) {
+            console.error('Could not fetch temperature: ', error);
+            document.getElementById('temperature').textContent = 'N/A';
+        }
+       }
+
+       document.addEventListener('DOMContentLoaded', getTemperature);
+    
+    </script>
+</body>
+
+</html>
